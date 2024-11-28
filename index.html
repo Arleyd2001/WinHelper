@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinHelper</title>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@0.263.1/dist/umd/lucide.min.js"></script>le>
+    <style>
+        /* Estilos generales */
+        :root {
+            --background-color: #e6f1ff;
+            /* Updated background color */
+            --text-color: #333333;
+            --header-background: #0d2b4d;
+            --header-text: #ffffff;
+            --card-background: #ffffff;
+            --card-text: #333333;
+            --button-background: #0d2b4d;
+            --button-text: #ffffff;
+            --footer-background: #0d2b4d;
+            --footer-text: #ffffff;
+        }
+
+        .dark {
+            --background-color: #1a1a1a;
+            --text-color: #ffffff;
+            --header-background: #0d2b4d;
+            --header-text: #ffffff;
+            --card-background: #2c2c2c;
+            --card-text: #ffffff;
+            --button-background: #4a90e2;
+            --button-text: #ffffff;
+            --footer-background: #0d2b4d;
+            --footer-text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--header-background);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--header-text);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--header-text);
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #4a90e2;
+        }
+
+        /* Main content */
+        main {
+            margin-top: 80px;
+        }
+
+        /* Slider */
+        .slider {
+            position: relative;
+            overflow: hidden;
+            height: 400px;
+            margin-bottom: 2rem;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide-content {
+            text-align: center;
+            color: #fff;
+            padding: 1rem;
+            background-color: rgba(13, 43, 77, 0.7);
+            border-radius: 5px;
+        }
+
+        .slide-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .slide-btn {
+            background-color: #fff;
+            border: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 5px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .slide-btn.active {
+            opacity: 1;
+        }
+
+        /* New section for description and video */
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .description-box,
+        .video-box {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            width: 48%;
+        }
+
+        .description-box h2 {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .description-box p {
+            color: var(--text-color);
+        }
+
+        .video-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-box iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 250px;
+            border: none;
+            border-radius: 8px;
+        }
+
+        /* Scripts section */
+        .scripts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            padding: 1rem 0;
+        }
+
+        .script-card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .script-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .script-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .script-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .script-card p {
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .script-card button {
+            background-color: var(--button-background);
+            color: var(--button-text);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .script-card button:hover {
+            background-color: #1a3a5c;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #4a90e2 0%, #4a90e2 100%);
+            color: white;
+        }
+
+        .challenge-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4a5568;
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .chatbot-container {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background-color: #f7f9f1;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+        }
+
+        .chatbot-header {
+            background-color: #16487ed5;
+            color: white;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chatbot-header img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .chatbot-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .chatbot-input {
+            display: flex;
+            border-top: 1px solid #ccc;
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-bottom-left-radius: 10px;
+        }
+
+        .chatbot-input button {
+            background-color: #4a5568;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-bottom-right-radius: 10px;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message.bot {
+            text-align: left;
+        }
+
+        .message .text {
+            display: inline-block;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .message.user .text {
+            background-color: #688ab1;
+            color: white;
+        }
+
+        .message.bot .text {
+            background-color: #4a91e27c;
+            color: black;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--footer-background);
+            color: var(--footer-text);
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .footer-section {
+            flex: 1;
+            margin-right: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #4a90e2;
+        }
+
+        .footer-section a {
+            color: var(--footer-text);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #4a90e2;
+        }
+
+        .social-links a {
+            margin-right: 1rem;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            background-color: var(--button-background);
+            color: var(--button-text);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 1rem;
+        }
+
+        .theme-toggle:hover {
+            background-color: #1a3a5c;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav ul {
+                margin-top: 1rem;
+            }
+
+            nav ul li {
+                margin-left: 0;
+                margin-right: 1rem;
+            }
+
+            .slider {
+                height: 300px;
+            }
+
+            .info-section {
+                flex-direction: column;
+            }
+
+            .description-box,
+            .video-box {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+            }
+
+            .footer-section {
+                margin-right: 0;
+            }
+
+            .logo-container {
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="sources\icono.jpeg" alt="Logo de Herramientas de Soporte Técnico"
+                        class="logo-icon">
+                    <div class="logo">WinHelper</div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#scripts">Scripts</a></li>
+                        <li><a href="#contacto">Contacto</a></li>
+                        <li><button class="theme-toggle" id="themeToggle">Cambiar Tema</button></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="inicio" class="slider">
+            <div class="slide active" style="background-image: url('sources/slider2.jpeg')">
+                <div class="slide-content">
+                    <h2>Optimiza tu trabajo</h2>
+                    <p>Optimizacion de tiempos</p>
+                </div>
+            </div>
+            <div class="slide" style="background-image: url('sources/slider1.jpg')">
+                <div class="slide-content">
+                    <h2></h2>
+                    <p>Automatizacion de tareas repetitivas</p>
+                </div>
+            </div>
+            <div class="slide" style="background-image: url('sources/slider3.jpeg')">
+                <div class="slide-content">
+                    <h2>Documentacion</h2>
+                    <p>Comandos esenciales de Powershell</p>
+                </div>
+            </div>s
+            <div class="slide-buttons"></div>
+        </section>
+
+        <style>
+            h2 {
+                font-size: 3rem; /* Ajusta el tamaño según lo necesites */
+            }
+        </style>
+
+        <div class="container">
+            <section class="info-section">
+                <div class="description-box">
+                    <h2><strong>Script Soporte</strong></h2>
+                    <p>Explora un completo menú interactivo que reúne las funciones más útiles para administrar,
+                        optimizar y solucionar problemas en sistemas Windows. Desde comprobaciones de conectividad y
+                        configuraciones de seguridad hasta la eliminación de archivos temporales, gestión de servicios y
+                        recuperación avanzada del sistema, este conjunto de comandos y submenús ha sido diseñado para
+                        facilitar las tareas de mantenimiento con opciones claras e intuitivas.</p>
+                </div>
+                <div class="video-box">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/TUNNmVeyjW0?si=fV2AvM5IiwJGP77G"
+                        title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </section>
+
+            <section id="scripts">
+                <h2 style="color: var(--text-color); margin-bottom: 1rem; font-size: 2rem;"><strong>Comandos
+                        utilizados</strong></h2>
+                <div class="scripts-container">
+
+
+
+
+                    <div class="script-card">
+                        <img src="sources/Conectividad.jpeg" alt="Automatización de Tareas">
+                        <p><strong>Conectividad</strong></p>
+                        <p>
+                            - Test-Connection.<br>
+                            - ipconfig /all.<br>
+                            - ipconfig /release.<br>
+                            - ipconfig /renew.<br>
+                            - tracert.
+                        </p>
+
+                    </div>
+
+                    <div class="script-card">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                            alt="Generador de Reportes">
+                        <p><strong>Seguridad</strong></p>
+                        <p>
+                        <p>
+                            - Get-Process<br>
+                            - Set-NetFirewallProfile
+                        </p>
+                        </p>
+
+                    </div>
+
+                    <div class="script-card">
+                        <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                            alt="Diagnóstico Rápido">
+                        <p><strong>Eliminación de Archivos Temporales</strong></p>
+
+                        <p>
+                            - Remove-Item -Path "$env:temp\*".<br>
+                            - takeown /F [ruta].<br>
+                            - icacls [ruta].<br>
+                            - Remove-Item -Path "C:\Windows\Prefetch\*".<br>
+                            - Clear-DnsClientCache..
+                        </p>
+
+
+                    </div>
+
+                    <div class="script-card">
+                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                            alt="Optimizador de Base de Datos">
+                        <p><strong>Gestión de Servicios</strong></p>
+                        <p>
+                            - Get-Service.<br>
+                            - Stop-Service -Name [servicio].<br>
+                            - Start-Service -Name [servicio].
+                        </p>
+
+
+                    </div>
+
+                    <div class="script-card">
+                        <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                            alt="Análisis de Logs">
+                        <p><strong> Configuraciones del Sistema</strong></p>
+                        <p>
+                            - ncpa.cpl.<br>
+                            - appwiz.cpl.<br>
+                            - powercfg.cpl.<br>
+                            - sysdm.cpl.<br>
+                            - timedate.cpl.<br>
+                            - inetcpl.cpl.<br>
+                            - main.cpl.<br>
+                            - mmsys.cpl.<br>
+                            - desk.cpl.
+                        </p>
+
+                    </div>
+
+                    <div class="script-card">
+                        <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                            alt="Monitoreo en Tiempo Real">
+                        <p><strong>Recuperación de Windows</strong></p>
+                        <p>
+                            - sfc /scannow.<br>
+                            - bootrec /fixmbr.<br>
+                            - bootrec /fixboot.<br>
+                            - rstrui.exe.<br>
+                            - DISM /Online /Cleanup-Image /RestoreHealth.
+                        </p>
+
+
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <div id="chatbot-toggle" class="chatbot-toggle">
+        <span class="text-2xl">💬</span>
+    </div>
+    <div id="chatbot-container" class="chatbot-container"></div>
+
+    <footer id="contacto">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <p>Email: Konecta@Soporte.com</p>
+                    <p>Teléfono: (123) 456-7890</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Enlaces Útiles</h3>
+                    <p><a href="#">Documentación</a></p>
+                    <p><a href="#">Preguntas Frecuentes</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Redes Sociales</h3>
+                    <div class="social-links">
+                        <a href="#" title="Facebook">📘</a>
+                        <a href="#" title="Twitter">🐦</a>
+                        <a href="#" title="LinkedIn">💼</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Slider functionality
+        const slides = document.querySelectorAll('.slide');
+        const slideButtons = document.querySelector('.slide-buttons');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            slides[index].classList.add('active');
+            currentSlide = index;
+            updateSlideButtons();
+        }
+
+        function nextSlide() {
+            showSlide((currentSlide + 1) % slides.length);
+        }
+
+        function createSlideButtons() {
+            for (let i = 0; i < slides.length; i++) {
+                const button = document.createElement('button');
+                button.classList.add('slide-btn');
+                button.addEventListener('click', () => showSlide(i));
+                slideButtons.appendChild(button);
+            }
+            updateSlideButtons();
+        }
+
+        function updateSlideButtons() {
+            const buttons = slideButtons.querySelectorAll('.slide-btn');
+            buttons.forEach((button, index) => {
+                if (index === currentSlide) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+
+        createSlideButtons();
+        setInterval(nextSlide, 5000);
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        themeToggle.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            const isDarkMode = htmlElement.classList.contains('dark');
+            themeToggle.textContent = isDarkMode ? 'Tema Claro' : 'Tema Oscuro';
+        });
+    </script>
+
+    <script type="text/babel">
+        const agricultureResponses = {
+            "test-path": "El comando Test-Path verifica si una ruta específica existe en el sistema de archivos. Devuelve True si la ruta existe y False si no. Por ejemplo, Test-Path 'C:\\Windows\\System32' verificará la existencia de esa carpeta.",
+
+          "authenticator": "Para exportar una extensión portable de Google Chrome desde una ruta específica, como //bancolombia/asesor/apps, sigue estos pasos:\n\n1. Abre Google Chrome y accede al menú de extensiones:\n   - Ve a la barra de direcciones y escribe 'chrome://extensions'.\n   - Alternativamente, puedes acceder al menú de tres puntos (ubicado en la parte superior derecha) y seleccionar 'Más herramientas' > 'Extensiones'.\n\n2. Habilita el modo de desarrollador:\n   - En la parte superior derecha de la página de extensiones, activa el interruptor 'Modo de desarrollador'.\n\n3. Carga la extensión desde la carpeta:\n   - Haz clic en el botón 'Cargar descomprimida'.\n   - Navega a la ruta donde se encuentra la extensión, como //bancolombia/asesor/apps.\n   - Selecciona la carpeta que contiene los archivos de la extensión.\n   - La extensión se cargará y se mostrará en la lista de extensiones de Chrome.\n\n4. Empaquetar la extensión (opcional, para crear una extensión portable):\n   - Una vez cargada, haz clic en el botón 'Empaquetar extensión'.\n   - Selecciona la carpeta de la extensión y opcionalmente especifica una ubicación para el archivo '.crx' exportado.\n   - Haz clic en 'Empaquetar' y se generará el archivo de extensión portable.\n\n5. Instala la extensión portable:\n   - Para instalar la extensión portable en otro navegador, arrastra el archivo '.crx' a la página de extensiones de Chrome y acepta la instalación.",
+
+
+
+            "start-process": "Start-Process inicia un nuevo proceso o programa desde PowerShell. Es útil para ejecutar aplicaciones, scripts o abrir programas. Por ejemplo, Start-Process 'cmd.exe' ejecutará la línea de comandos.",
+
+            "clear-host": "El comando Clear-Host limpia la consola de PowerShell, eliminando todo el texto visible en la pantalla, lo que ayuda a empezar desde una pantalla limpia.",
+
+            "write-host": "Write-Host permite imprimir mensajes en la consola. Se usa comúnmente para mostrar información al usuario, como resultados o mensajes de estado.",
+
+            "read-host": "Read-Host solicita la entrada del usuario en la consola. Se utiliza para capturar datos del usuario, como números, texto o decisiones que afectan al flujo del script.",
+
+            "test-connection": "Test-Connection realiza una comprobación de conectividad con una dirección IP o dominio, similar a un ping. Se usa para verificar si un host es accesible desde la máquina local. Por ejemplo, Test-Connection -ComputerName 'google.com' verifica la conectividad con Google.",
+
+            "ipconfig": "El comando ipconfig muestra información de configuración de red de la computadora, incluyendo direcciones IP, máscara de subred y puerta de enlace. Es útil para diagnosticar problemas de red.",
+
+            "tracert": "El comando tracert realiza un seguimiento de la ruta de los paquetes hacia una dirección IP o dominio, mostrando todos los puntos intermedios por los que pasan los paquetes en su camino. Se utiliza para identificar posibles cuellos de botella o fallos en la red.",
+
+            "set-netfirewallprofile": "Set-NetFirewallProfile configura el perfil del firewall en diferentes redes, como dominio, público o privado. Se puede habilitar o deshabilitar el firewall según las necesidades. Por ejemplo, Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True habilita el firewall en todos los perfiles.",
+
+            "takeown": "El comando takeown permite tomar posesión de un archivo o directorio en Windows. Se utiliza para otorgar derechos de acceso a archivos o carpetas a un usuario específico, como el administrador. Por ejemplo, takeown /F 'C:\\Windows\\Prefetch' toma posesión de la carpeta Prefetch.",
+
+            "icacls": "El comando icacls modifica las listas de control de acceso (ACL) de archivos y carpetas, permitiendo cambiar los permisos. Por ejemplo, icacls 'C:\\Windows\\Prefetch' /grant Administrators:F /T concede permisos completos a la carpeta Prefetch para los administradores.",
+
+            "remove-item": "Remove-Item elimina archivos o directorios del sistema. Se utiliza para eliminar archivos o carpetas de manera forzada, como en el caso de la limpieza de archivos temporales. Por ejemplo, Remove-Item -Path 'C:\\Temp\\*' elimina todos los archivos en la carpeta Temp.",
+
+            "clear-dnsclientcache": "El comando Clear-DnsClientCache limpia el caché de DNS en el cliente, lo que puede ayudar a resolver problemas relacionados con la resolución de nombres de dominio. Se utiliza para eliminar registros DNS antiguos que pueden estar causando problemas.",
+
+            "get-process": "Get-Process muestra una lista de los procesos en ejecución en el sistema, junto con información como el ID del proceso, uso de CPU y memoria. Es útil para monitorear o gestionar procesos en Windows.",
+
+            "stop-service": "Stop-Service detiene un servicio en el sistema. Se utiliza para detener procesos o servicios que no son necesarios o que deben ser reiniciados. Por ejemplo, Stop-Service -Name 'wuauserv' detiene el servicio de actualización de Windows.",
+
+            "start-service": "Start-Service inicia un servicio en el sistema. Es útil para arrancar servicios que están detenidos o para activar un servicio después de que se haya realizado una modificación. Por ejemplo, Start-Service -Name 'wuauserv' inicia el servicio de actualización de Windows.",
+
+            "ncpa.cpl": "El comando ncpa.cpl abre la ventana de Conexiones de Red en el Panel de Control, permitiendo al usuario gestionar sus conexiones de red, como las conexiones Ethernet o Wi-Fi.",
+
+            "appwiz.cpl": "El comando appwiz.cpl abre el Panel de Control de Programas y Características, que permite a los usuarios desinstalar programas instalados en el sistema.",
+
+            "powercfg.cpl": "El comando powercfg.cpl abre las Opciones de Energía en el Panel de Control, donde los usuarios pueden configurar planes de energía y administrar el uso de energía del sistema.",
+
+            "sysdm.cpl": "El comando sysdm.cpl abre las Propiedades del Sistema, que permiten al usuario gestionar la configuración de hardware, las variables de entorno, la configuración de la red y más.",
+
+            "timedate.cpl": "El comando timedate.cpl abre la Configuración de Fecha y Hora en el Panel de Control, permitiendo al usuario ajustar la fecha, hora y zona horaria.",
+
+            "inetcpl.cpl": "El comando inetcpl.cpl abre las Opciones de Internet, donde se pueden configurar las preferencias de conexión y seguridad en el navegador de Internet.",
+
+            "main.cpl": "El comando main.cpl abre la Configuración del Mouse en el Panel de Control, permitiendo al usuario ajustar la velocidad, el doble clic y otras preferencias del ratón.",
+
+            "mmsys.cpl": "El comando mmsys.cpl abre las Opciones de Sonido en el Panel de Control, permitiendo al usuario configurar los dispositivos de audio y las preferencias de sonido.",
+
+            "desk.cpl": "El comando desk.cpl abre las Opciones de Resolución de Pantalla, permitiendo al usuario ajustar la resolución, la orientación y la configuración de múltiples pantallas.",
+
+            "prefetch": "Prefetch es una carpeta de Windows que contiene archivos y datos de programas que se han ejecutado previamente. Los archivos en esta carpeta ayudan a acelerar el arranque de las aplicaciones al precargar datos que probablemente se usarán. Limpiar la carpeta Prefetch puede liberar espacio, pero no siempre es necesario hacerlo con frecuencia.",
+
+            "temp": "La carpeta Temp en Windows almacena archivos temporales creados por aplicaciones o el propio sistema operativo durante la ejecución de tareas. Los archivos en esta carpeta pueden ocupar espacio, pero la mayoría de ellos no son necesarios una vez que se ha completado la tarea o el programa que los generó. Limpiar la carpeta Temp es una buena práctica para liberar espacio y mantener el sistema limpio.",
+
+            // Nuevas funciones añadidas
+            "mantenimiento-sistema": "El mantenimiento del sistema incluye tareas como la limpieza de archivos innecesarios y la eliminación de registros antiguos. Esto ayuda a mantener el sistema operativo funcionando sin problemas y a liberar espacio en disco. Puedes ejecutar la herramienta de limpieza de disco o limpiar los logs del sistema para optimizar el rendimiento.",
+
+            "monitoreo-recursos": "El monitoreo de recursos permite revisar el uso de la CPU, la memoria y el disco en tiempo real. Esto es útil para identificar procesos que están consumiendo recursos excesivos y para garantizar que el sistema funcione de manera eficiente.",
+
+            "ver-eventos-sistema": "Ver los eventos del sistema te permite revisar los registros del sistema para detectar errores, advertencias o eventos informativos que pueden ayudar a diagnosticar problemas en el sistema operativo.",
+
+            "actualizar-sistema": "Actualizar el sistema garantiza que tengas las últimas correcciones de seguridad y mejoras de rendimiento. Puedes utilizar herramientas como 'Get-WindowsUpdate' para instalar actualizaciones importantes del sistema.",
+
+            "limpiar-logs": "Limpiar los logs del sistema elimina los archivos de registro que se generan por los eventos del sistema. Estos archivos pueden ocupar espacio en disco y no siempre son necesarios para el funcionamiento del sistema.",
+
+            // Opciones de reparación de Windows
+            "reparar-archivos-sistema": "El comando 'sfc /scannow' se utiliza para reparar archivos de sistema dañados o faltantes. Ejecuta esta herramienta para verificar y restaurar los archivos de sistema de Windows a su estado original.",
+
+            "reparar-boot": "El comando 'bootrec /fixmbr' y 'bootrec /fixboot' se utilizan para reparar el MBR (Master Boot Record) y el sector de arranque de Windows. Úsalo si el sistema no puede arrancar correctamente.",
+
+            "reparacion-inicio-windows": "Usa 'chkdsk /f' para reparar errores en el disco duro que podrían estar causando problemas en el arranque o funcionamiento de Windows.",
+
+            "restaurar-sistema": "La restauración del sistema permite restaurar Windows a un punto anterior cuando todo funcionaba correctamente. Esto puede resolver problemas causados por cambios recientes en el sistema.",
+
+            "modo-recuperacion": "El Modo de Recuperación de Windows proporciona opciones avanzadas para solucionar problemas de arranque. Puedes acceder a él al reiniciar tu PC y seleccionar las opciones de recuperación.",
+
+            "resetear-windows": "La opción de restablecer Windows permite reinstalar el sistema operativo sin perder tus archivos personales. Sin embargo, se eliminarán las aplicaciones y configuraciones.",
+
+            "reparar-con-dism": "El comando DISM (Deployment Imaging Service and Management Tool) se usa para reparar la imagen de Windows. 'DISM /Online /Cleanup-Image /RestoreHealth' puede solucionar problemas que 'sfc /scannow' no puede resolver.",
+            
+    // Categorías principales
+    "conectividad": "La categoría 'Conectividad' incluye funciones relacionadas con el diagnóstico y solución de problemas de red, como verificar conectividad, gestionar configuraciones de red y rastrear rutas de paquetes.",
+    "seguridad": "La categoría 'Seguridad' agrupa herramientas para configurar el firewall, gestionar permisos y proteger el sistema contra accesos no autorizados mediante comandos como Set-NetFirewallProfile y takeown.",
+    "eliminacion-archivos-temporales": "La categoría 'Eliminación de Archivos Temporales' contiene funciones que ayudan a limpiar archivos innecesarios del sistema, liberando espacio en disco y mejorando el rendimiento del equipo.",
+    "direccion-servicios": "La categoría 'Dirección de Servicios' incluye comandos para gestionar servicios del sistema, como iniciar, detener o reiniciar servicios esenciales.",
+    "configuraciones-sistema": "La categoría 'Configuraciones del Sistema' permite acceder rápidamente a configuraciones del Panel de Control, como opciones de red, energía, sonido y propiedades del sistema.",
+    "recuperacion-windows": "La categoría 'Recuperación de Windows' ofrece herramientas avanzadas para solucionar problemas críticos del sistema, como reparación de archivos, restauración del sistema o restablecimiento del sistema operativo.",
+
+    // Ejemplo de información detallada para cada categoría
+    "detalle-conectividad": "Funciones principales:\n- Test-Connection: Verifica la conectividad con una dirección IP o dominio.\n- ipconfig: Muestra la configuración de red actual.\n- tracert: Rastrea la ruta de los paquetes hacia una dirección específica.",
+    "detalle-seguridad": "Funciones principales:\n- Set-NetFirewallProfile: Configura el firewall para diferentes redes.\n- takeown: Toma posesión de archivos o carpetas.\n- icacls: Gestiona permisos de acceso a archivos.",
+    "detalle-eliminacion-archivos-temporales": "Funciones principales:\n- Remove-Item: Elimina archivos o carpetas específicas.\n- Clear-DnsClientCache: Limpia el caché de DNS.\n- Limpieza de carpetas Temp y Prefetch.",
+    "detalle-direccion-servicios": "Funciones principales:\n- Start-Service: Inicia servicios del sistema.\n- Stop-Service: Detiene servicios innecesarios.\n- Get-Service: Lista los servicios en ejecución.",
+    "detalle-configuraciones-sistema": "Funciones principales:\n- ncpa.cpl: Abre las configuraciones de red.\n- appwiz.cpl: Accede a la desinstalación de programas.\n- timedate.cpl: Modifica la fecha y hora del sistema.",
+    "detalle-recuperacion-windows": "Funciones principales:\n- sfc /scannow: Repara archivos dañados del sistema.\n- DISM: Repara la imagen del sistema operativo.\n- bootrec: Repara problemas del arranque de Windows.",
+
+    // Nuevas funciones añadidas en categorías específicas
+    "diagnostico-red": "Esta función verifica problemas de conectividad y analiza rutas de red para identificar errores en la comunicación entre dispositivos.",
+    
+    "gestion-firewall": "Permite habilitar, deshabilitar o configurar reglas del firewall para garantizar la seguridad en diferentes perfiles de red.",
+    "limpieza-disco": "Limpia archivos temporales y registros innecesarios para optimizar el uso del espacio en disco y mejorar el rendimiento del sistema."
+};
+        
+
+
+        const ChatBot = () => {
+            const [messages, setMessages] = React.useState([]);
+            const [inputMessage, setInputMessage] = React.useState('');
+            const [userName, setUserName] = React.useState('');
+            const [isNameAsked, setIsNameAsked] = React.useState(false);
+            const messagesEndRef = React.useRef(null);
+
+            const scrollToBottom = () => {
+                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            };
+
+            React.useEffect(scrollToBottom, [messages]);
+            // Función para obtener el saludo según la hora
+            const getGreeting = () => {
+                const hour = new Date().getHours();
+                if (hour >= 5 && hour < 12) {
+                    return "Buenos días";
+                } else if (hour >= 12 && hour < 18) {
+                    return "Buenas tardes";
+                } else {
+                    return "Buenas noches";
+                }
+            };
+
+            React.useEffect(() => {
+                const greeting = getGreeting();
+                const botMessage = {
+                    text: `${greeting}, antes de empezar, ¿cómo te llamas?`, sender: 'bot'
+                };
+                setMessages([botMessage]);
+                setIsNameAsked(true);
+            }, []);
+
+            const handleSendMessage = () => {
+                if (inputMessage.trim() === '') return;
+
+                const userMessage = { text: inputMessage, sender: 'user' };
+                setMessages(prevMessages => [...prevMessages, userMessage]);
+
+                setTimeout(() => {
+                    const botResponse = getBotResponse(inputMessage);
+                    setMessages(prevMessages => [...prevMessages, botResponse]);
+                }, 1000);
+
+                setInputMessage('');
+            };
+
+            const getBotResponse = (input) => {
+                if (!userName) {
+                    setUserName(input.trim());
+                    return {
+                        text: `¡Encantado de conocerte, ${input.trim()}! ¿En qué puedo ayudarte hoy?`,
+                        sender: 'bot',
+                        quickReplies: ['ipconfig', 'tracert', 'prefetch']
+                    };
+                }
+
+                const lowercaseInput = input.toLowerCase();
+
+                if (lowercaseInput === 'adios') {
+                    return {
+                        text: `Hasta luego, ${userName}. ¡Que tengas un buen día!`,
+                        sender: 'bot',
+                        quickReplies: [] // No hay respuestas rápidas
+                    };
+                }
+
+                // Reconocimiento de palabras clave
+                for (const key in agricultureResponses) {
+                    if (lowercaseInput.includes(key)) {
+                        // Filtra las respuestas rápidas para que no incluyan la palabra clave ya seleccionada
+                        const remainingResponses = Object.keys(agricultureResponses).filter(
+                            k => k !== key && k !== 'gracias' && k !== 'adios'
+                        );
+
+                        // Selecciona 3 respuestas rápidas aleatorias que no sean la palabra seleccionada
+                        const newQuickReplies = remainingResponses
+                            .sort(() => 0.5 - Math.random())
+                            .slice(0, 3);
+
+                        return {
+                            text: `${userName}, ${agricultureResponses[key]}`,
+                            sender: 'bot',
+                            quickReplies: newQuickReplies
+                        };
+                    }
+                }
+
+                // Respuestas aleatorias cuando no se entiende la entrada
+                const randomResponses = [
+                    "Interesante pregunta. ¿Podrías reformularla?",
+                    "No estoy seguro de entender. ¿Puedes ser más específico?",
+                    "Hmm, eso es nuevo para mí. ¿Quieres que hablemos de otro temas tecmocps?",
+                    "Parece que nos hemos salido un poco del tema. ¿Qué tal si hablamos de comandos o configuraciones?",
+                    "Esa es una perspectiva interesante. ¿Puedes explicarme más?"
+                ];
+
+                const randomResponse = randomResponses[Math.floor(Math.random() * randomResponses.length)];
+
+                const remainingResponses = Object.keys(agricultureResponses).filter(
+                    k => k !== 'gracias' && k !== 'adios'
+                );
+                const newQuickReplies = remainingResponses
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, 2);
+                newQuickReplies.push('adios');
+
+                return {
+                    text: `${userName}, ${randomResponse}`,
+                    sender: 'bot',
+                    quickReplies: newQuickReplies
+                };
+
+            };
+
+            const handleQuickReply = (reply) => {
+                const userMessage = { text: reply, sender: 'user' };
+                setMessages(prevMessages => [...prevMessages, userMessage]);
+
+                setTimeout(() => {
+                    const botResponse = getBotResponse(reply);
+                    setMessages(prevMessages => [...prevMessages, botResponse]);
+                }, 1000);
+            };
+
+            return (
+                <div className="flex flex-col h-full">
+                    <div className="chatbot-header">
+                        <div className="flex items-center">
+                            <img src="sources\icono.jpeg" alt="CHATBOT" />
+                            <h2 className="text-xl font-bold ml-2">WinHelper</h2>
+                        </div>
+                        <button id="chatbot-close">&times;</button>
+                    </div>
+                    <div className="chatbot-messages" id="chatbot-messages">
+                        {messages.map((message, index) => (
+                            <div key={index} className={`message ${message.sender}`}>
+                                <div className="text">{message.text}</div>
+                                {message.quickReplies && (
+                                    <div className="quick-replies mt-2">
+                                        {message.quickReplies.map((reply, replyIndex) => (
+                                            <button
+                                                key={replyIndex}
+                                                onClick={() => handleQuickReply(reply)}
+                                                className="bg-blue-500 text-white px-2 py-1 rounded mr-2 mb-2 text-sm"
+                                            >
+                                                {reply}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                        <div ref={messagesEndRef} />
+                    </div>
+                    <div className="chatbot-input">
+                        <input
+                            type="text"
+                            value={inputMessage}
+                            onChange={(e) => setInputMessage(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                            placeholder="Escribe tu mensaje..."
+                            className="flex-1 border rounded-l-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button
+                            onClick={handleSendMessage}
+                            className="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-nlue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <span className="text-xl">➤</span>
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Renderiza el componente ChatBot en el contenedor
+        ReactDOM.render(<ChatBot />, document.getElementById('chatbot-container'));
+
+        // Manejo de la apertura y cierre del chat
+        document.getElementById('chatbot-toggle').addEventListener('click', function () {
+            const chatbotContainer = document.getElementById('chatbot-container');
+            if (chatbotContainer.style.display === 'none' || chatbotContainer.style.display === '') {
+                chatbotContainer.style.display = 'flex';
+            } else {
+                chatbotContainer.style.display = 'none';
+            }
+        });
+
+        // Cierre del chat al hacer clic en el botón de cierre
+        document.addEventListener('click', function (event) {
+            if (event.target.id === 'chatbot-close') {
+                document.getElementById('chatbot-container').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>
